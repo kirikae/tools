@@ -5,6 +5,8 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+HDIR=$(getent passwd $SUDO_USER | cut -d: -f6)
+
 PARAMS=()
 
 while [[ $# -gt 0 ]]; do
@@ -66,19 +68,19 @@ set -- "${PARAMS[@]}"
 if [[ "${OS}" -eq "rhel8" ]]; then
   OS_VARIANT="rhel8-unknown"
   ISO="/var/lib/libvirt/images/rhel/8/rhel8.iso"
-  KICKSTART="/home/ben/Repositories/kickstarts/ks-el8.cfg"
+  KICKSTART="$HDIR/Repositories/kickstarts/ks-el8.cfg"
 elif [[ "${OS}" -eq "cs8" ]]; then
   OS_VARIANT="centos-stream8"
   ISO="/var/lib/libvirt/images/centos/stream8/"
-  KICKSTART="/home/ben/Repositories/kickstarts/ks-el8.cfg"
+  KICKSTART="$HDIR/Repositories/kickstarts/ks-el8.cfg"
 elif [[ "${OS}" -eq "rhel7" ]]; then
   OS_VARIANT="rhel8-unknown"
   ISO="/var/lib/libvirt/images/rhel/7/rhel7.iso"
-  KICKSTART="/home/ben/Repositories/kickstarts/ks-el7.cfg"
+  KICKSTART="$HDIR/Repositories/kickstarts/ks-el7.cfg"
 elif [[ "${OS}" -eq "centos7" ]]; then
   OS_VARIANT="centos7"
   ISO="/var/lib/libvirt/images/centos/7/"
-  KICKSTART="/home/ben/Repositories/kickstarts/ks-el7.cfg"
+  KICKSTART="$HDIR/Repositories/kickstarts/ks-el7.cfg"
 else
   OS_VARIANT="detect=on,name=generic"
 fi
@@ -86,12 +88,6 @@ fi
 if [[ -n "${DOMAIN}" ]]; then
   DOMAIN="example.com"
 fi
-
-
-  #--location /var/lib/libvirt/images/rhel/rhel-server-7.7-x86_64-dvd.iso \
-  #--location /var/lib/libvirt/images/CentOS-7-x86_64-Everything-1810.iso \
-  #--location /var/lib/libvirt/images/rhel/7/rhel-server-7.9-x86_64-dvd.iso \
-  #--extra-args="ks=file:/el7-cdrom.ks.cfg console=tty0 console=ttyS0,115200n8 \
 
 virt-install \
   --name ${VM_NAME} \
